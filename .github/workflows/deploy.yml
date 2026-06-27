@@ -1,0 +1,64 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://${{ secrets.SERVER_HOST }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify CI passed
+        run: echo "Deploying commit ${{ github.sha }} to production."
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes \
+            "$SERVER_USER@$SERVER_HOST" \
+            "set -e
+             cd '$DEPLOY_PATH'
+             git fetch --all
+             git reset --hard origin/main
+             docker compose pull --quiet
+             docker compose build --no-cache --parallel
+             docker compose up -d --remove-orphans
+             docker compose exec -T backend alembic upgrade head
+             docker system prune -f --volumes=false
+             echo 'Deployment complete at \$(date)'"
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Notify success
+        if: success()
+        run: echo "::notice title=Deployment Succeeded::VoiceSplit deployed to ${{ secrets.SERVER_HOST }} at $(date -u)"
+
+      - name: Notify failure
+        if: failure()
+        run: echo "::error title=Deployment Failed::VoiceSplit deployment to ${{ secrets.SERVER_HOST }} failed. Check logs."
