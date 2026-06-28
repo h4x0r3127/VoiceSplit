@@ -6,17 +6,17 @@ export interface SpeakerSegment {
 
 export interface Speaker {
   id: string
-  jobId: string
+  job_id: string
   label: string
   color: string
   gender?: 'male' | 'female' | 'unknown'
-  ageRange?: string
+  age_range?: string
   language?: string
-  speakingDuration: number
+  speaking_duration: number
   confidence: number
   emotion?: string
   accent?: string
-  previewUrl?: string
+  preview_s3_key?: string
   segments: SpeakerSegment[]
 }
 

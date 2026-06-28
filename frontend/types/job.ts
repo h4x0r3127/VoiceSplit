@@ -30,34 +30,37 @@ export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
 }
 
 export const PIPELINE_STAGES: Array<{ key: string; label: string; description: string }> = [
-  { key: 'PREPROCESSING', label: 'Noise Reduction', description: 'Cleaning audio and removing background noise' },
-  { key: 'VAD', label: 'Voice Detection', description: 'Detecting regions of human speech' },
-  { key: 'DIARIZING', label: 'Speaker Diarization', description: 'Identifying who speaks when' },
-  { key: 'EMBEDDING', label: 'Voice Embeddings', description: 'Creating unique voice fingerprints' },
-  { key: 'CLUSTERING', label: 'Clustering', description: 'Grouping speech segments by speaker' },
-  { key: 'SEPARATING', label: 'Speech Separation', description: 'Isolating each speaker\'s audio' },
-  { key: 'TRANSCRIBING', label: 'Transcription', description: 'Converting speech to text' },
-  { key: 'ANALYZING', label: 'Analysis', description: 'Computing speaker statistics' },
-  { key: 'RECONSTRUCTING', label: 'Reconstruction', description: 'Generating final audio files' },
+  { key: 'PREPROCESSING', label: 'Noise Reduction',     description: 'Cleaning audio and removing background noise' },
+  { key: 'VAD',           label: 'Voice Detection',     description: 'Detecting regions of human speech' },
+  { key: 'DIARIZING',     label: 'Speaker Diarization', description: 'Identifying who speaks when' },
+  { key: 'EMBEDDING',     label: 'Voice Embeddings',    description: 'Creating unique voice fingerprints' },
+  { key: 'CLUSTERING',    label: 'Clustering',          description: 'Grouping speech segments by speaker' },
+  { key: 'SEPARATING',    label: 'Speech Separation',   description: 'Isolating each speaker\'s audio' },
+  { key: 'TRANSCRIBING',  label: 'Transcription',       description: 'Converting speech to text' },
+  { key: 'ANALYZING',     label: 'Analysis',            description: 'Computing speaker statistics' },
+  { key: 'RECONSTRUCTING',label: 'Reconstruction',      description: 'Generating final audio files' },
 ]
 
 export interface Job {
   id: string
-  userId: string
-  originalFilename: string
+  user_id: string
+  original_filename: string
+  original_s3_key: string
+  processed_s3_key?: string
   status: JobStatus
-  pipelineStage?: string
+  pipeline_stage?: string
   progress: number
-  durationSeconds?: number
-  fileSizeBytes: number
-  errorMessage?: string
+  duration_seconds?: number
+  file_size_bytes: number
+  error_message?: string
+  audio_metadata?: Record<string, unknown>
   speakers: Speaker[]
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 export interface JobProgress {
-  jobId: string
+  job_id: string
   stage: string
   progress: number
   message: string
@@ -65,11 +68,11 @@ export interface JobProgress {
 
 export interface TranscriptSegment {
   id: string
-  speakerId: string
-  speakerLabel: string
-  speakerColor: string
-  startTime: number
-  endTime: number
+  speaker_id: string
+  speaker_label: string
+  speaker_color: string
+  start_time: number
+  end_time: number
   text: string
   confidence: number
 }
