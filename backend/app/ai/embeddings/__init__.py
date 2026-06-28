@@ -1,3 +1,9 @@
-from app.ai.embeddings.speechbrain import SpeechBrainEmbeddingService
+"""
+Speaker embedding package for the VoiceSplit AI pipeline.
 
-__all__ = ["SpeechBrainEmbeddingService"]
+Exposes SpeakerEmbeddingService as the single public entry-point.
+"""
+
+from app.ai.embeddings.service import SpeakerEmbeddingService
+
+__all__ = ["SpeakerEmbeddingService"]

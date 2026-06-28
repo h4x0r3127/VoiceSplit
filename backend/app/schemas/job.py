@@ -57,6 +57,21 @@ class JobListResponse(BaseModel):
 
 class JobProgressUpdate(BaseModel):
     job_id: str
+    status: str
     stage: str
     progress: int
     message: str
+    error: Optional[str] = None
+
+
+class JobStatusResponse(BaseModel):
+    """Lightweight response for the polling /jobs/{id}/status endpoint."""
+
+    job_id: str
+    status: JobStatus
+    pipeline_stage: Optional[str] = None
+    progress: int
+    error_message: Optional[str] = None
+    duration_seconds: Optional[float] = None
+    audio_metadata: Optional[dict] = None
+

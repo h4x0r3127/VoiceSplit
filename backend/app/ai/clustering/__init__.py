@@ -1,3 +1,9 @@
-from app.ai.clustering.agglomerative import AgglomerativeClusteringService
+"""
+Speaker clustering package for the VoiceSplit AI pipeline.
 
-__all__ = ["AgglomerativeClusteringService"]
+Exposes SpeakerClusterService as the single public entry-point.
+"""
+
+from app.ai.clustering.service import SpeakerClusterService
+
+__all__ = ["SpeakerClusterService"]

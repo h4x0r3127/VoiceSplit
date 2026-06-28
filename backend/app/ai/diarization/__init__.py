@@ -1,3 +1,9 @@
-from app.ai.diarization.pyannote import PyannoteDiarizationService
+"""
+Speaker diarization package for the VoiceSplit AI pipeline.
 
-__all__ = ["PyannoteDiarizationService"]
+Exposes SpeakerDiarizationService as the single public entry-point.
+"""
+
+from app.ai.diarization.service import SpeakerDiarizationService
+
+__all__ = ["SpeakerDiarizationService"]
