@@ -44,7 +44,6 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
 
 RUN mkdir -p .next \
   && chown nextjs:nodejs .next

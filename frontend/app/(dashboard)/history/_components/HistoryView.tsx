@@ -86,7 +86,7 @@ export function HistoryView() {
   })
 
   const jobs = (data?.items ?? []).filter((j) =>
-    search ? j.originalFilename.toLowerCase().includes(search.toLowerCase()) : true,
+    search ? j.original_filename.toLowerCase().includes(search.toLowerCase()) : true,
   )
   const total = data?.total ?? 0
   const totalPages = Math.ceil(total / perPage)

@@ -5,9 +5,18 @@ import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import {
-  FileAudio, Clock, Users, HardDrive, Upload, ArrowRight,
-  CheckCircle, Loader2, AlertCircle, XCircle,
-} from 'lucide-react'
+  FileAudio,
+  Clock,
+  Users,
+  HardDrive,
+  Upload,
+  ArrowRight,
+  CheckCircle,
+  Loader2,
+  AlertCircle,
+  XCircle,
+  LucideIcon,
+} from "lucide-react"
 import { GlassCard } from '@/components/common/GlassCard'
 import { GradientButton } from '@/components/common/GradientButton'
 import { EmptyState } from '@/components/common/EmptyState'
@@ -29,7 +38,7 @@ function StatCard({
   value,
   color,
 }: {
-  icon: React.ComponentType<{ className?: string }>
+  icon: LucideIcon
   label: string
   value: string | number
   color: string

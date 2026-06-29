@@ -14,6 +14,7 @@ import { formatBytes } from '@/lib/utils'
 import { useUploadQueue } from '@/hooks/useUploadQueue'
 import { UploadQueue } from './UploadQueue'
 import { AudioPreview } from './AudioPreview'
+import type { FileRejection } from 'react-dropzone'
 
 const ACCEPTED_TYPES: Record<string, string[]> = {
   'audio/mpeg':   ['.mp3'],
@@ -39,10 +40,10 @@ export function UploadInterface() {
   const [dropError, setDropError] = useState<string | null>(null)
 
   const onDrop = useCallback(
-    async (accepted: File[], rejected: { errors: { message: string }[] }[]) => {
+    async (accepted: File[], rejected: readonly FileRejection[]) => {
       setDropError(null)
       if (rejected.length > 0) {
-        setDropError(rejected[0]?.errors[0]?.message ?? 'Unsupported file or size exceeded')
+        setDropError(rejected[0]?.errors?.[0]?.message ?? 'Unsupported file or size exceeded')
         return
       }
       if (accepted.length === 0) return

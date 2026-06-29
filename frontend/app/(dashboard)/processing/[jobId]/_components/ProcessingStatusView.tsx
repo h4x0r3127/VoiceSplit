@@ -241,11 +241,29 @@ export function ProcessingStatusView({ jobId }: ProcessingStatusViewProps) {
               <h2 className="text-base font-semibold text-white mb-4">Audio details</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { icon: Clock,    label: 'Duration',    value: formatDuration(Number(metadata.duration_seconds ?? 0)) },
-                  { icon: HardDrive,label: 'File size',   value: formatBytes(Number(metadata.file_size_bytes ?? job?.file_size_bytes ?? 0)) },
-                  { icon: Music2,   label: 'Format',      value: String(metadata.format ?? 'Unknown').toUpperCase() },
-                  { icon: Mic2,     label: 'Sample rate', value: metadata.sample_rate ? `${metadata.sample_rate / 1000} kHz` : 'Unknown' },
-                ].map(({ icon: Icon, label, value }) => (
+{
+    icon: Clock,
+    label: 'Duration',
+    value: formatDuration(Number(metadata.duration_seconds ?? 0)),
+  },
+  {
+    icon: HardDrive,
+    label: 'File size',
+    value: formatBytes(Number(metadata.file_size_bytes ?? job?.file_size_bytes ?? 0)),
+  },
+  {
+    icon: Music2,
+    label: 'Format',
+    value: String(metadata.format ?? 'Unknown').toUpperCase(),
+  },
+  {
+    icon: Mic2,
+    label: 'Sample rate',
+    value: metadata.sample_rate
+      ? `${Number(metadata.sample_rate) / 1000} kHz`
+      : 'Unknown',
+  },
+].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex flex-col gap-1">
                     <div className="flex items-center gap-1.5 text-muted">
                       <Icon className="w-3.5 h-3.5" />

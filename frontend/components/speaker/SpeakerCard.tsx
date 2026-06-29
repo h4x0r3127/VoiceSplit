@@ -5,7 +5,6 @@ import { Play, Pause, Check } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn, formatDuration } from '@/lib/utils'
 import { SpeakerAvatar } from './SpeakerAvatar'
-import { MiniWaveform } from '@/components/audio/MiniWaveform'
 import type { Speaker } from '@/types/speaker'
 
 interface SpeakerCardProps {
@@ -26,7 +25,7 @@ export function SpeakerCard({ speaker, index, isSelected, onToggle }: SpeakerCar
 
   const handlePreview = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!speaker.previewUrl) return
+    if (!speaker.preview_s3_key) return
     setIsPreviewPlaying((p) => !p)
   }
 
@@ -72,7 +71,7 @@ export function SpeakerCard({ speaker, index, isSelected, onToggle }: SpeakerCar
           />
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-white truncate">{speaker.label}</h3>
-            <p className="text-xs text-muted">{formatDuration(speaker.speakingDuration)} speaking</p>
+            <p className="text-xs text-muted">{formatDuration(speaker.speaking_duration)} speaking</p>
           </div>
         </div>
 
@@ -83,9 +82,9 @@ export function SpeakerCard({ speaker, index, isSelected, onToggle }: SpeakerCar
               {GENDER_LABELS[speaker.gender] ?? speaker.gender}
             </span>
           )}
-          {speaker.ageRange && (
+          {speaker.age_range && (
             <span className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-muted border border-white/10">
-              {speaker.ageRange}
+              {speaker.age_range}
             </span>
           )}
           {speaker.language && (
@@ -121,10 +120,10 @@ export function SpeakerCard({ speaker, index, isSelected, onToggle }: SpeakerCar
         </div>
 
         {/* Waveform */}
-        <MiniWaveform speaker={speaker} />
+        <div className="h-8 w-full rounded bg-white/5" />
 
         {/* Preview */}
-        {speaker.previewUrl && (
+        {speaker.preview_s3_key && (
           <button
             onClick={handlePreview}
             className="mt-3 flex items-center gap-2 text-xs text-muted hover:text-white transition-colors w-full"
