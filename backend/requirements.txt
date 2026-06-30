@@ -19,7 +19,19 @@ structlog>=24.0.0
 stripe>=8.0.0
 google-auth>=2.29.0
 python-dotenv>=1.0.0
-# Phase 3 additions
-mutagen>=1.47.0           # Pure-Python audio metadata extraction (no ffprobe needed)
-psycopg2-binary>=2.9.9    # Sync PostgreSQL driver for Celery tasks
-websockets>=13.0          # WebSocket protocol support (used by Starlette/FastAPI)
+mutagen>=1.47.0
+psycopg2-binary>=2.9.9
+websockets>=13.0
+
+numpy>=1.26.4
+scipy>=1.13.1
+soundfile>=0.12.1
+librosa>=0.10.2
+ffmpeg-python>=0.2.0
+torch>=2.3.1
+torchaudio>=2.3.1
+pyannote.audio>=3.1.1
+speechbrain>=1.0.0
+openai-whisper>=20240930
+scikit-learn>=1.5.1
+noisereduce>=3.0.2
