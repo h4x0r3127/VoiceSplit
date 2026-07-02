@@ -83,19 +83,29 @@ services:
   # ─────────────────────────────────────────────
   # Backend (FastAPI)
   # ─────────────────────────────────────────────
+    # ─────────────────────────────────────────────
+  # Backend (FastAPI)
+  # ─────────────────────────────────────────────
   backend:
     build:
       context: .
       dockerfile: docker/backend.Dockerfile
+
     image: voicesplit-backend:latest
+
     restart: unless-stopped
+
     env_file: .env
+
     environment:
       ENVIRONMENT: ${ENVIRONMENT:-production}
+
     volumes:
       - ./backend:/app
+
     networks:
       - voicesplit_network
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -103,15 +113,26 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+
+    ports:
+      - "8000:8000"
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 40s
-    expose:
+
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
       - "8000"
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+      - --workers
+      - "2"
 
   # ─────────────────────────────────────────────
   # Worker (Celery) — shares backend image
@@ -144,9 +165,6 @@ services:
     command: ["celery", "-A", "app.workers.celery_app", "worker", "--loglevel=info", "--concurrency=2"]
 
   # ─────────────────────────────────────────────
-  # Frontend (Next.js)
-  # ─────────────────────────────────────────────
-    # ─────────────────────────────────────────────
   # Frontend (Next.js)
   # ─────────────────────────────────────────────
   frontend:

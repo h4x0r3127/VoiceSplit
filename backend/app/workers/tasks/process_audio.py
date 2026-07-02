@@ -204,7 +204,11 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
             metadata = extract_audio_metadata(tmp_path)
             meta_dict = metadata.to_dict()
 
-            progress("PREPROCESSING", "SAVING_METADATA", 80, "Saving metadata…")
+            progress("PREPROCESSING", "PREPROCESSING", 20, "Preparing audio...")
+            preprocessor = PreprocessingService()
+            result = asyncio.run(
+                preprocessor.process(...)
+)
 
             # ── Step 3: Persist metadata to DB ─────────────────────────────
             _sync_update_job(
