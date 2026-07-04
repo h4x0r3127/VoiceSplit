@@ -22,27 +22,44 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
+
+    print("\n========== AUTH DEBUG ==========")
+
+    print("TOKEN:", credentials.credentials)
+
     payload = decode_token(credentials.credentials)
-    user_id_str: Optional[str] = payload.get("sub")
+    print("PAYLOAD:", payload)
+
+    user_id_str = payload.get("sub")
+    print("SUB:", user_id_str)
+
     if not user_id_str:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload",
-        )
+        print("❌ No sub in token")
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+
     try:
         user_id = uuid.UUID(user_id_str)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload",
-        )
+        print("UUID:", user_id)
+    except Exception as e:
+        print("UUID ERROR:", e)
+        raise HTTPException(status_code=401, detail="Invalid UUID")
 
     user = await _user_repo.get_by_id(db, user_id)
+
+    print("USER:", user)
+
+    if user:
+        print("ACTIVE:", user.is_active)
+        print("DELETED:", user.deleted_at)
+
+    print("================================\n")
+
     if not user or user.deleted_at is not None or not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=401,
             detail="User not found or inactive",
         )
+
     return user
 
 

@@ -78,6 +78,7 @@ async def upload_audio(
         progress=0,
     )
     created = await _job_repo.create(db, job)
+    created = await _job_repo.get_by_id_with_speakers(db, created.id)
 
     # Update user storage usage
     await _user_repo.update_storage_used(db, current_user.id, size_bytes)
@@ -95,6 +96,7 @@ async def upload_audio(
         # The operator can retry manually or via a management command.
         logger.error("task_enqueue_failed", job_id=str(created.id), error=str(exc))
 
+    await db.refresh(created, attribute_names=["speakers"])
     return JobResponse.model_validate(created)
 
 
