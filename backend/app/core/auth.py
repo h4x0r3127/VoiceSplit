@@ -25,14 +25,32 @@ def create_refresh_token(data: dict[str, Any]) -> str:
 
 def decode_token(token: str) -> dict[str, Any]:
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        print("\n===== JWT DEBUG =====")
+        print("SECRET:", settings.SECRET_KEY)
+        print("ALGORITHM:", settings.ALGORITHM)
+        print("TOKEN:", token)
+
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+        )
+
+        print("PAYLOAD:", payload)
+        print("=====================\n")
+
         return payload
-    except JWTError as exc:
+
+    except Exception as e:
+        print("\n===== JWT ERROR =====")
+        print(type(e).__name__)
+        print(str(e))
+        print("=====================\n")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
-        ) from exc
+        )
 
 
 def verify_google_token(id_token: str, client_id: str) -> dict[str, Any]:
