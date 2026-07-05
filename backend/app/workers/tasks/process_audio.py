@@ -26,6 +26,11 @@ from celery.utils.log import get_task_logger
 
 from app.workers.celery_app import celery_app
 from app.config import settings
+from pathlib import Path
+
+from ai.preprocessing.service import PreprocessingService
+from ai.preprocessing.models import AudioInput
+from ai.interfaces.base_stage import StageContext
 
 logger = get_task_logger(__name__)
 
@@ -205,19 +210,32 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
             logger.info(
                 f"file_downloaded | job_id={job_id} | tmp_path={tmp_path}"
                 )
-
-            progress("PREPROCESSING", "EXTRACTING_METADATA", 40, "Extracting audio metadata…")
-
-            # ── Step 2: Extract metadata ───────────────────────────────────
-            from app.utils.audio import extract_audio_metadata
-            metadata = extract_audio_metadata(tmp_path)
-            meta_dict = metadata.to_dict()
-
+            
             progress("PREPROCESSING", "PREPROCESSING", 20, "Preparing audio...")
+
             preprocessor = PreprocessingService()
+
+            audio_input = AudioInput(
+                file_path=Path(tmp_path),
+                original_filename=os.path.basename(tmp_path),
+                job_id=job_id,
+            )
+
+            context = StageContext(
+                job_id=job_id,
+                stage="preprocessing",
+            )
+
             result = asyncio.run(
-                preprocessor.process(...)
-)
+                preprocessor.process(
+                    input=audio_input,
+                    context=context,
+                )
+            )
+
+            logger.info(
+                f"preprocessing_complete | job_id={job_id}"
+            )
 
             # ── Step 3: Persist metadata to DB ─────────────────────────────
             _sync_update_job(
@@ -228,7 +246,6 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
                 audio_metadata=meta_dict,
                 duration_seconds=metadata.duration_seconds,
             )
-
             # ── Step 4: Mark COMPLETED ─────────────────────────────────────
             _sync_update_job(
                 job_id=job_id,
