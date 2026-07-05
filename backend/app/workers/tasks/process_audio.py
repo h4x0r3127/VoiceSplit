@@ -61,7 +61,9 @@ def _publish_progress(
     }
     channel = f"{PROGRESS_CHANNEL_PREFIX}{job_id}"
     redis_client.publish(channel, json.dumps(payload))
-    logger.debug("progress_published", channel=channel, progress=progress)
+    logger.debug(
+    f"progress_published | channel={channel} | progress={progress}"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -135,7 +137,8 @@ class AudioProcessingTask(Task):
                 )
                 redis.close()
             except Exception as publish_exc:
-                logger.error("on_failure_publish_error", error=str(publish_exc))
+                logger.error(
+                    f"on_failure_publish_error | error={publish_exc}")
         super().on_failure(exc, task_id, args, kwargs, einfo)
 
 
@@ -171,10 +174,14 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
     def progress(status: str, stage: str, pct: int, msg: str) -> None:
         _sync_update_job(job_id=job_id, status=status, progress=pct, pipeline_stage=stage)
         _publish_progress(redis, job_id, status, stage, pct, msg)
-        logger.info("task_progress", job_id=job_id, stage=stage, pct=pct)
+        logger.info(
+            f"task_progress | job_id={job_id} | stage={stage} | progress={pct}%"
+            )
 
     try:
-        logger.info("process_audio_start", job_id=job_id, s3_key=s3_key)
+        logger.info(
+            f"process_audio_start | job_id={job_id} | s3_key={s3_key}"
+            )
 
         # ── Step 1: Download from MinIO ────────────────────────────────────
         progress("PREPROCESSING", "DOWNLOADING", 10, "Downloading audio file…")
@@ -195,7 +202,9 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
 
         try:
             minio_client.fget_object(settings.MINIO_BUCKET, s3_key, tmp_path)
-            logger.info("file_downloaded", job_id=job_id, tmp_path=tmp_path)
+            logger.info(
+                f"file_downloaded | job_id={job_id} | tmp_path={tmp_path}"
+                )
 
             progress("PREPROCESSING", "EXTRACTING_METADATA", 40, "Extracting audio metadata…")
 
@@ -237,21 +246,22 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
             )
 
             logger.info(
-                "process_audio_complete",
-                job_id=job_id,
-                duration=metadata.duration_seconds,
-                format=metadata.format,
-            )
+                f"process_audio_complete | job_id={job_id} | duration={metadata.duration_seconds}s | format={metadata.format}"
+                )
             return meta_dict
 
         finally:
             # Always clean up the temp file
             if os.path.exists(tmp_path):
                 os.unlink(tmp_path)
-                logger.debug("tmp_file_deleted", path=tmp_path)
+                logger.debug(
+                    f"tmp_file_deleted | path={tmp_path}"
+                    )
 
     except Exception as exc:
-        logger.exception("process_audio_error", job_id=job_id, error=str(exc))
+        logger.exception(
+            f"process_audio_error | job_id={job_id} | error={exc}"
+            )
         # Retry on transient errors (network/DB)
         raise self.retry(exc=exc)
     finally:
