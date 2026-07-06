@@ -211,6 +211,10 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
                 f"file_downloaded | job_id={job_id} | tmp_path={tmp_path}"
                 )
             
+            from app.utils.audio import extract_audio_metadata
+            metadata = extract_audio_metadata(tmp_path)
+            meta_dict = metadata.to_dict()
+            
             progress("PREPROCESSING", "PREPROCESSING", 20, "Preparing audio...")
 
             preprocessor = PreprocessingService()
@@ -223,7 +227,9 @@ def process_audio_task(self: Task, job_id: str, s3_key: str) -> dict:
 
             context = StageContext(
                 job_id=job_id,
-                stage="preprocessing",
+                extra={
+                    "stage": "preprocessing",
+                },
             )
 
             result = asyncio.run(

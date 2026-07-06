@@ -95,7 +95,12 @@ class _StageLogger:
 
     def _emit(self, level: int, event: str, **kwargs: Any) -> None:
         if self._inner.isEnabledFor(level):
-            self._inner.log(level, event, stacklevel=3, **kwargs)
+            self._inner.log(
+            level,
+            event,
+            extra=kwargs,
+            stacklevel=3,
+        )
 
     def debug(self, event: str, **kwargs: Any) -> None:
         self._emit(logging.DEBUG, event, **kwargs)
