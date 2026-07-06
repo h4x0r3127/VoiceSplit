@@ -195,7 +195,7 @@ export function DashboardOverview() {
             <div className="space-y-2">
               {recentJobs.slice(0, 5).map((job) => (
                 <GlassCard key={job.id} hover className="p-4" padding={false}>
-                  <Link href={job.status === 'COMPLETED' ? `/results/${job.id}` : `/history`}>
+                  <Link href={`/processing/${job.id}`}>
                     <div className="flex items-center gap-4 p-4">
                       <div className="w-9 h-9 rounded-xl bg-brand-cyan/10 flex items-center justify-center flex-shrink-0">
                         <FileAudio className="w-4 h-4 text-brand-cyan" />
