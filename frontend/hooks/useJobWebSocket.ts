@@ -71,6 +71,7 @@ export function useJobWebSocket({
     ws.onmessage = (event) => {
       try {
         const data: JobProgressEvent = JSON.parse(event.data)
+        console.log("WS MESSAGE:", data)
 
         // Ignore heartbeat pings
         if (data.type === 'ping') return
@@ -80,28 +81,37 @@ export function useJobWebSocket({
         if (TERMINAL_STATUSES.has(data.status)) {
           isTerminalRef.current = true
           setIsTerminal(true)
-          ws.close(1000, 'Job terminal')
-          if (data.status === 'COMPLETED') onComplete?.(data)
-          if (data.status === 'FAILED') onFailed?.(data)
+
+          if (data.status === "COMPLETED") {
+            onComplete?.(data)
+          }
+          if (data.status === "FAILED") {
+            onFailed?.(data)
+          }
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.close(1000, "Job terminal")
+          }
         }
       } catch {
         // non-JSON frame — ignore
       }
     }
-
     ws.onclose = (event) => {
+      console.log("WS CLOSED:", {
+        code: event.code,
+        reason: event.reason,
+        terminal: isTerminalRef.current,
+      })
       setIsConnected(false)
       wsRef.current = null
-
       if (isTerminalRef.current || !enabled) return
-
-      // Reconnect with backoff
+      // Reconnect with backoff 
       if (reconnectAttempts.current < MAX_RECONNECT_ATTEMPTS) {
         const delay = RECONNECT_DELAY_MS * Math.pow(1.5, reconnectAttempts.current)
         reconnectAttempts.current += 1
         reconnectTimer.current = setTimeout(connect, delay)
       } else {
-        setError('Lost connection to server. Please refresh to continue.')
+        setError("Lost connection to server. Please refresh to continue.")
       }
     }
 
