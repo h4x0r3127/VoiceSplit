@@ -89,7 +89,12 @@ export function ProcessingStatusView({ jobId }: ProcessingStatusViewProps) {
     enabled: !!token && !!job && !['COMPLETED', 'FAILED'].includes(job.status),
     onComplete: () => {
       refetch()
+
+      setTimeout(() => {
+        router.push(`/results/${jobId}`)
+      }, 1000)
     },
+    
     onFailed: (event) => {
       setWsError(event.error ?? 'Processing failed')
       refetch()
@@ -313,11 +318,15 @@ export function ProcessingStatusView({ jobId }: ProcessingStatusViewProps) {
             className="flex items-center gap-3"
           >
             {isCompleted && (
-              <GradientButton size="md" onClick={() => router.push('/history')}>
+              <GradientButton
+              size="md"
+              onClick={() => router.push(`/results/${jobId}`)}
+              >
                 <CheckCircle className="w-4 h-4" />
-                View in history
+                View Results
               </GradientButton>
             )}
+            
             {isFailed && (
               <GradientButton size="md" onClick={() => router.push('/upload')}>
                 <RefreshCw className="w-4 h-4" />
