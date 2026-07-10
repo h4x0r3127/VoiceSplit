@@ -88,9 +88,11 @@ export function ProcessingStatusView({ jobId }: ProcessingStatusViewProps) {
     token,
     enabled: !!token && !!job && !['COMPLETED', 'FAILED'].includes(job.status),
     onComplete: () => {
+      console.log("🎉 onComplete fired!")
+      
       refetch()
-
       setTimeout(() => {
+        console.log("➡️ Redirecting to:", `/results/${jobId}`)
         router.push(`/results/${jobId}`)
       }, 1000)
     },
