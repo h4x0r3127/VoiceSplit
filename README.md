@@ -10,7 +10,7 @@
 
 <img src="frontend/public/logo.png" alt="VoiceSplit Logo" width="180" />
 
-### Choose the voice that matters.
+### Choose the voice that matters to you.
 
 AI-powered speaker isolation and diarization platform — extract, separate, and export individual speakers from any audio or video file with production grade accuracy.
 
