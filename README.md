@@ -12,7 +12,7 @@
 
 ### Choose the voice that matters.
 
-AI-powered speaker isolation and diarization platform — extract, separate, and export individual speakers from any audio or video file with production-grade accuracy.
+AI-powered speaker isolation and diarization platform — extract, separate, and export individual speakers from any audio or video file with production grade accuracy.
 
 </div>
 
